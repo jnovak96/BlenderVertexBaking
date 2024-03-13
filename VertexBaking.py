@@ -52,8 +52,8 @@ bpy.ops.object.bake(type = 'DIFFUSE')
 bpy.ops.geometry.color_attribute_add(name="baked_colors")
 color_attr_node = m.node_tree.nodes.new("ShaderNodeVertexColor")
 color_attr_node.layer_name = "baked_colors"
+m.node_tree.links.new(img_node.outputs["Color"], o.active_material.node_tree.nodes['Material Output'].inputs['Surface'])
 m.node_tree.nodes.active = color_attr_node
-m.node_tree.links.new(img_node.outputs["Color"], bpy.data.materials['Material'].node_tree.nodes['Material Output'].inputs['Surface'])
 
 #bake vertex colors
 D.scenes["Scene"].cycles.samples = env_samples
@@ -65,10 +65,11 @@ D.scenes["Scene"].render.bake.margin = margin
 D.scenes["Scene"].render.bake.target = 'VERTEX_COLORS'
 D.scenes["Scene"].display_settings.display_device = 'sRGB'
 bpy.ops.object.bake(type = 'EMIT')
+m.node_tree.links.new(color_attr_node.outputs["Color"], o.active_material.node_tree.nodes['Material Output'].inputs['Surface'])
 
 #remove nodes
 #bpy.data.materials['Material'].node_tree.nodes.remove(img_node)
-bpy.data.materials['Material'].node_tree.nodes.remove(uv_map)
+#bpy.data.materials['Material'].node_tree.nodes.remove(uv_node)
 bpy.data.images.remove(image)
-o.data.uv_textures.remove('UV_lightmap')
+o.data.uv_layers.remove(uv_lm)
 #other cleanup
